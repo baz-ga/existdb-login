@@ -1,11 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <html>
   <head>
     <meta charset="utf-8"/>
     <title>existdb-login</title>
 
-    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"/>
     <link rel="import" href="bower_components/existdb-login/existdb-login.html"/>
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Arapey"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat"/>
+        <link rel="stylesheet" href="$resources/lib/bootstrap/dist/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="$resources/lib/font-awesome/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="$resources/css/footer.css"/>
+        <link rel="stylesheet" href="$resources/css/nav-search.css"/>
+        <link rel="stylesheet" href="$resources/css/styles.css"/>
+        <link rel="stylesheet" href="$resources/css/results.css"/>
+        <link rel="stylesheet" href="$resources/css/filters.css"/>
+        <link rel="stylesheet" href="$resources/lib/bootstrap-slider/dist/css/bootstrap-slider.min.css"/>
   </head>
   <body>
 
@@ -15,17 +26,15 @@
       Both forms can be used to login. Use the native one if you don't want to deal with Web Components.
     </p>
 
-    <existdb-login target="restricted.html" style="width:400px; height: 200px;">&#160;</existdb-login>
+    <existdb-login target="restricted.html" style="width:400px; height: 200px;"> </existdb-login>
 
 
     <h2>native form login</h2>
     <div>
-      <form class="form" id="form" action="restricted.html" method="post">
-        <input type="hidden" name="origin" value="{$origin}" autocomplete="on"/>
-        <input label="User ID" id="user" name="user" autofocus="autofocus" required="required"
-               error="Please input your username"/>
-        <input label="Password" type="password" id="password" name="password"
-               error="Please input your password"/>
+      <form class="form" id="form" action="/exist/apps/bazga-webapp" method="post" data-template="templates:form-control">
+        <input name="origin" value="{$origin}" autocomplete="on" type="hidden"/><!--type="hidden" -->
+        <input label="User ID" id="user" name="user" autofocus="autofocus" required="required" error="Please input your username"/>
+        <input label="Password" type="password" id="password" name="password" error="Please input your password"/>
         <button type="submit" on-click="_handleSubmit">Sign me in</button>
       </form>
     </div>

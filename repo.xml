@@ -7,8 +7,9 @@
     <license>GNU-LGPL</license>
     <type>application</type>
     <target>existdb-login</target>
-    <prepare></prepare>
+    <prepare/>
     <finish/>
     <login required="true" url="login.html"/>
+
 
 </meta>

@@ -2,6 +2,7 @@ xquery version "3.1";
 
 import module namespace login="http://exist-db.org/xquery/login" at "resource:org/exist/xquery/modules/persistentlogin/login.xql";
 import module namespace console="http://exist-db.org/xquery/console";
+import module namespace apputil="http://exist-db.org/xquery/apps";
 
 declare variable $exist:path external;
 declare variable $exist:resource external;
@@ -9,21 +10,32 @@ declare variable $exist:controller external;
 declare variable $exist:prefix external;
 declare variable $exist:root external;
 
+declare variable $origin := request:get-attribute('origin');
+(:declare variable $origin := request:get-parameter('orgin', '/exist/apps/bazga-webapp/');:)
+
 console:log("controller path: " || $exist:path),
 if ($exist:path eq '') then
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
         <redirect url="{request:get-uri()}/"/>
     </dispatch>
+else if (contains($exist:path, "$resources/")) then
+                <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+                    <forward url="/bazga-webapp/resources/{substring-after($exist:path, '$resources/')}">
+                        <set-header name="Cache-Control" value="max-age=1, must-revalidate"/>
+
+                    </forward>
+                    <cache-control cache="no"/>
+                </dispatch>
 else if ($exist:path = "/") then(
     console:log("matched '/'" || $exist:path),
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-        <redirect url="index.html"/>
+        <redirect url="login.html"/>
     </dispatch>
 )
 (:
     restricted.html is secured by the following rules
 :)
-else if (ends-with($exist:path, "restricted.html")) then (
+else if (matches($exist:path, "\?")) then (
         (: login:set-user creates a authenticated session for a user :)
         login:set-user("org.exist.login", (), true()),
 
@@ -54,7 +66,7 @@ else if (ends-with($exist:path, "restricted.html")) then (
                     <redirect url="index.html"/>
                 </dispatch>
             )
-            else if ($user and sm:is-dba($user)) then
+            else if ($user and 'bazga-testers' = sm:get-user-groups($user)) then (:sm:is-dba($user):)
                 (:
                 successful login. The user has authenticated and is in the 'dba' group. It's important however to keep
                 the cache-control set to 'cache="no"'. Otherwise re-authentication after a logout won't be forced. The
@@ -75,9 +87,34 @@ else if (ends-with($exist:path, "restricted.html")) then (
                 <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
                     <forward url="fail.html"/>
                 </dispatch>
+                
             else
+                let $bazga-url := apputil:link-to-app("http://baz-ga.de/bazga-webapp", '')
+                return
                 (: if nothing of the above matched we got a login attempt. :)
                 <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-                    <forward url="login.html"/>
+                    <forward url="login.html?origin={$origin}">
+                        <add-parameter name="origin" value="{$origin}"/>
+                        <set-attribute name="$exist:root" value="{$exist:root}"/>
+                        <set-attribute name="$exist:prefix" value="{$exist:prefix}"/>
+                        <set-attribute name="$exist:controller" value="{$exist:controller}"/>
+                    </forward>
+                    <view>
+                        <forward url="/{$bazga-url}/modules/view.xql"/>
+                    </view>
+                    <error-handler>
+                        <forward url="{request:get-context-path()}/{$bazga-url}/templates/error-page.html" method="get"/>
+                        <forward url="{$bazga-url}/modules/view.xql"/>
+                    </error-handler>
+                    <cache-control cache="no"/>
                 </dispatch>
-)else ()
+            
+           
+)else
+    (: if nothing of the above matched we got a login attempt. :)
+    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+        <forward url="login.html?origin={$origin}">
+        <add-parameter name="origin" value="{$origin}"/>
+            <set-attribute name="origin" value="{$origin}"/>
+        </forward>
+    </dispatch>

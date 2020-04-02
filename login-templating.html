@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>test</title>
+    </head>
+    <body>
+        <div>
+            <h2>templating Sign in</h2>
+            <div>
+              <form class="form" id="sign-in" action="action" method="post" data-template="templates:form-control">
+                <input name="origin" value="origin" autocomplete="on" data-template="templates:form-control"/><!--type="hidden" -->
+                <input label="User ID" id="user" name="user" autofocus="autofocus" required="required" error="Please input your username"/>
+                <input label="Password" type="password" id="password" name="password" error="Please input your password" data-template="templates:form-control"/>
+                <button type="submit" on-click="_handleSubmit" data-template="templates:form-control">Sign me in</button>
+              </form>
+            </div>
+        </div>
+    </body>
+</html>
