@@ -9,6 +9,7 @@ declare variable $exist:resource external;
 declare variable $exist:controller external;
 declare variable $exist:prefix external;
 declare variable $exist:root external;
+declare variable $exist:context external;
 
 declare variable $origin := request:get-attribute('origin');
 (:declare variable $origin := request:get-parameter('orgin', '/exist/apps/bazga-webapp/');:)
@@ -19,13 +20,12 @@ if ($exist:path eq '') then
         <redirect url="{request:get-uri()}/"/>
     </dispatch>
 else if (contains($exist:path, "$resources/")) then
-                <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-                    <forward url="/bazga-webapp/resources/{substring-after($exist:path, '$resources/')}">
-                        <set-header name="Cache-Control" value="max-age=1, must-revalidate"/>
-
-                    </forward>
-                    <cache-control cache="no"/>
-                </dispatch>
+    <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
+        <forward url="{apputil:resolve("http://baz-ga.de/bazga-webapp")}/resources/{substring-after($exist:path, '$resources/')}">
+            <set-header name="Cache-Control" value="max-age=1, must-revalidate"/>
+        </forward>
+        <cache-control cache="no"/>
+    </dispatch>
 else if ($exist:path = "/") then(
     console:log("matched '/'" || $exist:path),
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
@@ -89,18 +89,18 @@ else if (matches($exist:path, "\?")) then (
                 </dispatch>
                 
             else
-                let $bazga-url := apputil:link-to-app("http://baz-ga.de/bazga-webapp", '')
+                let $bazga-url := apputil:link-to-app("http://baz-ga.de/bazga-webapp", 'index.html')
                 return
                 (: if nothing of the above matched we got a login attempt. :)
                 <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-                    <forward url="login.html?origin={$origin}">
+                    <forward url="login-templating.html?origin={$origin}">
                         <add-parameter name="origin" value="{$origin}"/>
                         <set-attribute name="$exist:root" value="{$exist:root}"/>
                         <set-attribute name="$exist:prefix" value="{$exist:prefix}"/>
                         <set-attribute name="$exist:controller" value="{$exist:controller}"/>
                     </forward>
                     <view>
-                        <forward url="/{$bazga-url}/modules/view.xql"/>
+                        <forward url="/{apputil:link-to-app("http://baz-ga.de/bazga-webapp", 'modules/view.xql')}"/>
                     </view>
                     <error-handler>
                         <forward url="{request:get-context-path()}/{$bazga-url}/templates/error-page.html" method="get"/>
@@ -112,9 +112,19 @@ else if (matches($exist:path, "\?")) then (
            
 )else
     (: if nothing of the above matched we got a login attempt. :)
+    let $bazga-url := apputil:link-to-app("http://baz-ga.de/bazga-webapp", 'index.html')
+    return
     <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
-        <forward url="login.html?origin={$origin}">
-        <add-parameter name="origin" value="{$origin}"/>
+        <forward url="login-templating.html?origin={$origin}">
+            <add-parameter name="origin" value="{$origin}"/>
             <set-attribute name="origin" value="{$origin}"/>
         </forward>
+        <view>
+            <forward url="/{apputil:resolve("http://baz-ga.de/bazga-webapp")}/modules/view.xql"/>
+        </view>
+        <error-handler>
+            <forward url="{request:get-context-path()}/{$bazga-url}/templates/error-page.html" method="get"/>
+            <forward url="{$bazga-url}/modules/view.xql"/>
+        </error-handler>
+        <cache-control cache="no"/>
     </dispatch>
