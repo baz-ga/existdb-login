@@ -68,7 +68,7 @@ else if (matches($exist:path, "\?")) then (
             )
             else if ($user and 'bazga-testers' = sm:get-user-groups($user)) then
                 (:
-                successful login. The user has authenticated and is in the 'dba' group. It's important however to keep
+                successful login. The user has authenticated and is in the 'bazga-testers' group. It's important however to keep
                 the cache-control set to 'cache="no"'. Otherwise re-authentication after a logout won't be forced. The
                 page will get served from cache and not hit the controller any more.
                 :)
