@@ -66,7 +66,7 @@ else if (matches($exist:path, "\?")) then (
                     <redirect url="index.html"/>
                 </dispatch>
             )
-            else if ($user and 'bazga-testers' = sm:get-user-groups($user)) then (:sm:is-dba($user):)
+            else if ($user and 'bazga-testers' = sm:get-user-groups($user)) then
                 (:
                 successful login. The user has authenticated and is in the 'dba' group. It's important however to keep
                 the cache-control set to 'cache="no"'. Otherwise re-authentication after a logout won't be forced. The
@@ -87,7 +87,7 @@ else if (matches($exist:path, "\?")) then (
                 <dispatch xmlns="http://exist.sourceforge.net/NS/exist">
                     <forward url="fail.html"/>
                 </dispatch>
-                
+
             else
                 let $bazga-url := apputil:link-to-app("http://baz-ga.de/bazga-webapp", 'index.html')
                 return
@@ -108,8 +108,8 @@ else if (matches($exist:path, "\?")) then (
                     </error-handler>
                     <cache-control cache="no"/>
                 </dispatch>
-            
-           
+
+
 )else
     (: if nothing of the above matched we got a login attempt. :)
     let $bazga-url := apputil:link-to-app("http://baz-ga.de/bazga-webapp", 'index.html')

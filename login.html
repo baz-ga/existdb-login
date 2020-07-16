@@ -32,7 +32,7 @@
     <h2>native form login</h2>
     <div>
       <form class="form" id="form" action="/exist/apps/bazga-webapp" method="post" data-template="templates:form-control">
-        <input name="origin" value="{$origin}" autocomplete="on" type="hidden"/><!--type="hidden" -->
+        <input name="origin" value="{$origin}" autocomplete="on" type="hidden"/>
         <input label="User ID" id="user" name="user" autofocus="autofocus" required="required" error="Please input your username"/>
         <input label="Password" type="password" id="password" name="password" error="Please input your password"/>
         <button type="submit" on-click="_handleSubmit">Sign me in</button>
